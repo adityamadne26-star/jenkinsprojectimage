@@ -7,7 +7,6 @@ metadata:
 
 spec:
   replicas: 2
-
   selector:
     matchLabels:
       app: myapp
@@ -19,10 +18,12 @@ spec:
 
     spec:
       containers:
-      - name: myapp-container
-        image: dockerhubusername/myapp:v1
-        ports:
-        - containerPort: 80
+        - name: myapp-container
+          image: yourdockerhubusername/myapp:v1   # 🔥 replace with your Docker Hub username
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+
 ---
 apiVersion: v1
 kind: Service
@@ -30,12 +31,14 @@ metadata:
   name: myapp-service
 
 spec:
+  type: NodePort   # ✅ works in local / Jenkins / Minikube
+
   selector:
     app: myapp
 
   ports:
-    - protocol: TCP
+    - name: http
+      protocol: TCP
       port: 80
       targetPort: 80
-
-  type: LoadBalancer
+      nodePort: 30007   # ✅ access via this port
